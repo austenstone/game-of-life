@@ -3,6 +3,7 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
+    font-family: "Roboto", sans-serif;
 }
 
 canvas {
@@ -16,7 +17,7 @@ canvas {
     right: 0;
     display: flex;
     flex-direction: column;
-    background: rgb(49 49 49 / 13%);
+    background: rgb(49 49 49 / 25%);
     color: black;
     padding: 10px;
 }
@@ -26,7 +27,10 @@ canvas {
         background: #303030;
     }
     #controls {
-        background: rgb(235 235 235 / 13%);
-        color: white;
+        background: rgb(235 235 235 / 25%);
     }
+}
+
+#controls > * {
+    margin: 5px;
 }

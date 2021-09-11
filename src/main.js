@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 let i = 0;
 let canvas = null;
 let ctx = null;
@@ -7,12 +6,12 @@ let cellHeight = 0;
 let stopped = true;
 let isDrawing = false;
 
-let cellCount = 300;
+let cellCount = Number(localStorage.getItem('cellCount')) || 300;
 let cells;
 let newCells;
 let fillStyle = '#fff';
-let circle = true;
-
+let circle = JSON.parse(localStorage.getItem('circle'));
+console.log(circle)
 const init = () => {
   cellWidth = ctx.canvas.width / cellCount;
   cellHeight = ctx.canvas.height / cellCount;
@@ -29,35 +28,27 @@ const getNoNeighbors = (x, y) => {
   let neighbors = 0;
 
   if (y < cellCount - 1) {
-    // top
     neighbors += cells[x][y + 1];
   }
   if (x < cellCount - 1) {
     if (y < cellCount - 1) {
-      // top right corner
       neighbors += cells[x + 1][y + 1];
     }
-    // right
     neighbors += cells[x + 1][y];
     if (y > 0) {
-      // bottom right corner
       neighbors += cells[x + 1][y - 1];
     }
   }
   if (x > 0) {
     if (y < cellCount - 1) {
-      // top left corner
       neighbors += cells[x - 1][y + 1]
     }
-    // left
     neighbors += cells[x - 1][y]
     if (y > 0) {
-      // bottom left corner
       neighbors += cells[x - 1][y - 1]
     }
   }
   if (y > 0) {
-    // bottom
     neighbors += cells[x][y - 1];
   }
 
@@ -85,7 +76,6 @@ const generate = () => {
         }
       }
       newCells[x][y] = outcome;
-
     }
   }
 
@@ -95,7 +85,6 @@ const generate = () => {
 const draw = () => {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  newCells = [...cells];
   for (let x = 0; x < cellCount; x++) {
     for (let y = 0; y < cellCount; y++) {
       if (cells[x][y]) {
@@ -117,12 +106,9 @@ function play() {
   cells = generate();
   draw();
   if (stopped === false) {
+    // setTimeout(play, 100);
     window.requestAnimationFrame(play);
   }
-}
-
-function stop() {
-  stopped = true;
 }
 
 window.onload = () => {
@@ -130,7 +116,6 @@ window.onload = () => {
   ctx = canvas.getContext('2d');
   ctx.canvas.width = window.innerWidth;
   ctx.canvas.height = window.innerHeight;
-  cellCount = Math.round(window.innerWidth / 10);
   window.addEventListener('resize', () => {
     cellWidth = ctx.canvas.width / cellCount;
     cellHeight = ctx.canvas.height / cellCount;
@@ -141,10 +126,8 @@ window.onload = () => {
 
   const darkModeOn = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   fillStyle = darkModeOn ? '#fff' : '#000'
-  console.log('dark mode', darkModeOn);
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     const darkModeOn = e.matches;
-    console.log('dark mode', darkModeOn);
     fillStyle = darkModeOn ? '#fff' : '#000'
   });
 
@@ -152,10 +135,15 @@ window.onload = () => {
   stopped = false;
   window.requestAnimationFrame(play);
 
+  if (!cellCount) {
+    cellCount = Math.round(window.innerWidth / 10);
+  }
+  window.document.getElementById('max').value = cellCount;
   window.document.getElementById('max').addEventListener('input', (e) => {
     cellCount = Number(e.target.value);
     init();
     window.requestAnimationFrame(draw);
+    localStorage.setItem('cellCount', cellCount);
   })
   window.document.getElementById('play-button').addEventListener('click', (e) => {
     stopped = false;
@@ -167,12 +155,11 @@ window.onload = () => {
   window.document.getElementById('run-button').addEventListener('click', (e) => {
     window.requestAnimationFrame(play);
   })
+  window.document.getElementById('circle').checked = circle;
   window.document.getElementById('circle').addEventListener('change', (e) => {
     circle = e.target.checked;
+    localStorage.setItem('circle', circle);
   })
-
-
-
   const getEventPosition = (e) => {
     let rect = canvas.getBoundingClientRect();
     return {
