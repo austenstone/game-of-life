@@ -124,11 +124,9 @@ window.onload = () => {
     window.requestAnimationFrame(draw);
   }, false);
 
-  const darkModeOn = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  fillStyle = darkModeOn ? '#fff' : '#000'
+  fillStyle = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? '#fff' : '#000'
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    const darkModeOn = e.matches;
-    fillStyle = darkModeOn ? '#fff' : '#000'
+    fillStyle = e.matches ? '#fff' : '#000'
   });
 
   init();
@@ -173,13 +171,15 @@ window.onload = () => {
     cells[Math.floor(x / window.innerWidth * cellCount)][Math.floor(y / window.innerHeight * cellCount)] = true;
     window.requestAnimationFrame(draw);
   });
-  canvas.addEventListener("mousemove", function (e) {
+  function movementHandler(e) {
     if (isDrawing) {
       let { x, y } = getEventPosition(e);
       cells[Math.floor(x / window.innerWidth * cellCount)][Math.floor(y / window.innerHeight * cellCount)] = true;
       window.requestAnimationFrame(draw);
     }
-  });
+  }
+  document.addEventListener("touchmove", movementHandler);
+  canvas.addEventListener("mousemove", movementHandler);
   canvas.addEventListener("mouseup", function (e) {
     isDrawing = false;
   });
