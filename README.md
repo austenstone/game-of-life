@@ -2,3 +2,5 @@
 
 # The Game of Life
 What is life anyways?
+
+## [Demo](http://life.austen.info/)
